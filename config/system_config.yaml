@@ -1,0 +1,108 @@
+# 시스템 설정 파일
+# ROS 2 로봇 관제 시스템 전반적인 설정
+
+# 네트워크 설정
+network:
+  rosbridge:
+    host: "localhost"
+    port: 9090
+    retry_attempts: 5
+    retry_interval: 3000  # milliseconds
+  
+  web_server:
+    host: "0.0.0.0"
+    port: 8080
+    
+  tf_republisher:
+    rate: 10.0  # Hz
+    angular_threshold: 0.01  # radians
+    translation_threshold: 0.01  # meters
+
+# 로봇 설정
+robot:
+  model: "turtlebot3_burger"
+  base_frame: "base_link"
+  map_frame: "map"
+  odom_frame: "odom"
+  
+  # 제어 한계값
+  max_linear_velocity: 0.22  # m/s
+  max_angular_velocity: 2.84  # rad/s
+  
+  # 안전 설정
+  obstacle_distance_threshold: 0.3  # meters
+  emergency_stop_enabled: true
+
+# UI 설정
+ui:
+  desktop:
+    window_width: 1200
+    window_height: 800
+    update_rate: 10  # Hz
+    
+  web:
+    auto_reconnect: true
+    message_timeout: 5000  # milliseconds
+    visualization_update_rate: 10  # Hz
+
+# 시각화 설정
+visualization:
+  map:
+    scale_factor: 1.0
+    grid_alpha: 0.8
+    
+  robot:
+    icon_size: 32  # pixels
+    trail_length: 100  # points
+    show_orientation: true
+    
+  laser_scan:
+    show_points: true
+    point_size: 1  # pixels
+    max_range: 3.5  # meters
+    color: "#FF0000"
+    alpha: 0.7
+
+# 로깅 설정
+logging:
+  level: "INFO"  # DEBUG, INFO, WARN, ERROR
+  console_output: true
+  file_output: false
+  log_file_path: "/tmp/robot_control_system.log"
+  
+# 미리 정의된 위치
+preset_positions:
+  home:
+    x: 0.0
+    y: 0.0
+    theta: 0.0
+    description: "홈 위치"
+    
+  position_a:
+    x: 2.0
+    y: 2.0
+    theta: 0.0
+    description: "위치 A"
+    
+  position_b:
+    x: -2.0
+    y: 2.0
+    theta: 1.5708  # 90 degrees
+    description: "위치 B"
+    
+  position_c:
+    x: 0.0
+    y: -2.0
+    theta: 3.1416  # 180 degrees
+    description: "위치 C"
+
+# 빠른 명령 설정
+quick_commands:
+  move_distance: 1.0  # meters
+  rotate_angle: 1.5708  # 90 degrees in radians
+  
+# 알림 설정
+notifications:
+  show_success_messages: true
+  show_error_messages: true
+  auto_hide_duration: 3000  # milliseconds

@@ -1,0 +1,87 @@
+# QoS 프로파일 설정
+# ROS 2 토픽별 Quality of Service 설정
+
+# 지도 토픽 (/map)
+map_qos:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: transient_local
+  deadline:
+    sec: 0
+    nsec: 0
+  lifespan:
+    sec: 0
+    nsec: 0
+  liveliness: system_default
+  liveliness_lease_duration:
+    sec: 0
+    nsec: 0
+
+# 로봇 포즈 토픽 (/tf, /tf_static)
+tf_qos:
+  history: keep_last
+  depth: 10
+  reliability: reliable
+  durability: volatile
+  deadline:
+    sec: 0
+    nsec: 0
+  lifespan:
+    sec: 0
+    nsec: 0
+  liveliness: system_default
+  liveliness_lease_duration:
+    sec: 0
+    nsec: 0
+
+# 센서 데이터 토픽 (/scan, /image_raw)
+sensor_qos:
+  history: keep_last
+  depth: 10
+  reliability: best_effort
+  durability: volatile
+  deadline:
+    sec: 0
+    nsec: 0
+  lifespan:
+    sec: 0
+    nsec: 0
+  liveliness: system_default
+  liveliness_lease_duration:
+    sec: 0
+    nsec: 0
+
+# 제어 명령 토픽 (/goal_pose, /cmd_vel)
+control_qos:
+  history: keep_last
+  depth: 1
+  reliability: reliable
+  durability: volatile
+  deadline:
+    sec: 0
+    nsec: 0
+  lifespan:
+    sec: 0
+    nsec: 0
+  liveliness: system_default
+  liveliness_lease_duration:
+    sec: 0
+    nsec: 0
+
+# 오도메트리 토픽 (/odom)
+odometry_qos:
+  history: keep_last
+  depth: 50
+  reliability: reliable
+  durability: volatile
+  deadline:
+    sec: 0
+    nsec: 0
+  lifespan:
+    sec: 0
+    nsec: 0
+  liveliness: system_default
+  liveliness_lease_duration:
+    sec: 0
+    nsec: 0

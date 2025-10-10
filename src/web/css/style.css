@@ -1,0 +1,385 @@
+/* ROS 2 로봇 관제 시스템 스타일시트 */
+
+:root {
+  --primary-color: #2196F3;
+  --success-color: #4CAF50;
+  --warning-color: #FF9800;
+  --error-color: #F44336;
+  --background-color: #f5f5f5;
+  --card-background: #ffffff;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --border-color: #dddddd;
+  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+header {
+  background: linear-gradient(135deg, var(--primary-color), #1976D2);
+  color: white;
+  padding: 1rem 2rem;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.status-bar {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.status-connected {
+  color: var(--success-color);
+  font-weight: bold;
+}
+
+.status-disconnected {
+  color: var(--error-color);
+  font-weight: bold;
+}
+
+.status-connecting {
+  color: var(--warning-color);
+  font-weight: bold;
+}
+
+.container {
+  display: flex;
+  min-height: calc(100vh - 80px);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* 시각화 패널 */
+.visualization-panel {
+  flex: 3;
+  background: var(--card-background);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.panel-header h2 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.view-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.control-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.control-btn:hover {
+  background: #1976D2;
+}
+
+#viewer-container {
+  position: relative;
+  height: calc(100vh - 200px);
+  overflow: hidden;
+}
+
+#map-viewer, #robot-viewer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#robot-viewer {
+  z-index: 10;
+  pointer-events: none;
+}
+
+.overlay-info {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 20;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  min-width: 200px;
+}
+
+.info-card h4 {
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.coordinate-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+/* 제어 패널 */
+.control-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 350px;
+}
+
+.status-section,
+.control-section,
+.sensor-section {
+  background: var(--card-background);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.status-section h3,
+.control-section h3,
+.sensor-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+}
+
+.control-section h4 {
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem 0;
+  color: var(--text-secondary);
+}
+
+.status-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.status-indicator {
+  font-weight: bold;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  background: var(--error-color);
+  color: white;
+}
+
+.input-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.input-group label {
+  font-weight: 500;
+  min-width: 60px;
+}
+
+.input-group input {
+  width: 80px;
+  padding: 0.3rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.primary-btn {
+  width: 100%;
+  background: var(--success-color);
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.primary-btn:hover {
+  background: #45a049;
+}
+
+.primary-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.command-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.command-grid .quick-btn:nth-child(1) { grid-column: 2; }
+.command-grid .quick-btn:nth-child(2) { grid-column: 1; grid-row: 2; }
+.command-grid .quick-btn:nth-child(3) { grid-column: 2; grid-row: 2; }
+.command-grid .quick-btn:nth-child(4) { grid-column: 3; grid-row: 2; }
+.command-grid .quick-btn:nth-child(5) { grid-column: 2; grid-row: 3; }
+
+.quick-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.quick-btn:hover {
+  background: #1976D2;
+}
+
+.stop-btn {
+  background: var(--error-color) !important;
+}
+
+.stop-btn:hover {
+  background: #d32f2f !important;
+}
+
+.rotation-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rotation-controls .quick-btn {
+  flex: 1;
+}
+
+.preset-positions {
+  margin-top: 1rem;
+}
+
+.preset-btn {
+  width: 100%;
+  background: var(--warning-color);
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.preset-btn:hover {
+  background: #f57c00;
+}
+
+.sensor-display {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sensor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.sensor-item span {
+  font-family: monospace;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .control-panel {
+    max-width: none;
+  }
+  
+  #viewer-container {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 1rem;
+  }
+  
+  header h1 {
+    font-size: 1.4rem;
+  }
+  
+  .status-bar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .container {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+  
+  .panel-header {
+    padding: 0.5rem;
+  }
+  
+  .view-controls {
+    flex-wrap: wrap;
+  }
+}

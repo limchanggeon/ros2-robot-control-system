@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ROS 2 로봇 관제 시스템</title>
+
+<!-- 외부 라이브러리 -->
+<script src="https://static.robotwebtools.org/threejs/current/three.min.js"></script>
+<script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+<script src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+<script src="https://static.robotwebtools.org/ros2djs/current/ros2d.min.js"></script>
+<script src="https://static.robotwebtools.org/ros3djs/current/ros3d.min.js"></script>
+
+<!-- 스타일시트 -->
+<link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <header>
+    <h1>🤖 TurtleBot3 실시간 관제 시스템</h1>
+    <div class="status-bar">
+      <span>ROS 연결 상태: <span id="connection-status" class="status-disconnected">연결되지 않음</span></span>
+      <span>업타임: <span id="uptime">00:00:00</span></span>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 왼쪽 패널: 시각화 -->
+    <section class="visualization-panel">
+      <div class="panel-header">
+        <h2>로봇 위치 및 지도</h2>
+        <div class="view-controls">
+          <button id="zoom-in-btn" class="control-btn">🔍+</button>
+          <button id="zoom-out-btn" class="control-btn">🔍-</button>
+          <button id="reset-view-btn" class="control-btn">🏠</button>
+        </div>
+      </div>
+      
+      <div id="viewer-container">
+        <div id="map-viewer"></div>
+        <div id="robot-viewer"></div>
+        
+        <!-- 오버레이 정보 -->
+        <div class="overlay-info">
+          <div class="info-card">
+            <h4>로봇 위치</h4>
+            <div class="coordinate-display">
+              <span>X: <span id="robot-x">0.00</span> m</span>
+              <span>Y: <span id="robot-y">0.00</span> m</span>
+              <span>θ: <span id="robot-theta">0.0</span>°</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 오른쪽 패널: 제어 및 상태 -->
+    <aside class="control-panel">
+      <!-- 연결 상태 -->
+      <div class="status-section">
+        <h3>시스템 상태</h3>
+        <div class="status-grid">
+          <div class="status-item">
+            <label>ROS Bridge:</label>
+            <span id="bridge-status" class="status-indicator">-</span>
+          </div>
+          <div class="status-item">
+            <label>TF Publisher:</label>
+            <span id="tf-status" class="status-indicator">-</span>
+          </div>
+          <div class="status-item">
+            <label>메시지 수신:</label>
+            <span id="message-count">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 로봇 제어 -->
+      <div class="control-section">
+        <h3>로봇 제어</h3>
+        
+        <!-- 목표 지점 설정 -->
+        <div class="goal-controls">
+          <h4>목표 지점 설정</h4>
+          <div class="input-group">
+            <label>X (m):</label>
+            <input type="number" id="goal-x" step="0.1" value="0" />
+          </div>
+          <div class="input-group">
+            <label>Y (m):</label>
+            <input type="number" id="goal-y" step="0.1" value="0" />
+          </div>
+          <div class="input-group">
+            <label>방향 (°):</label>
+            <input type="number" id="goal-theta" step="5" value="0" min="-180" max="180" />
+          </div>
+          <button id="send-goal-btn" class="primary-btn">목표 지점 전송</button>
+        </div>
+
+        <!-- 빠른 명령 -->
+        <div class="quick-commands">
+          <h4>빠른 명령</h4>
+          <div class="command-grid">
+            <button class="quick-btn" data-action="forward">⬆️ 전진</button>
+            <button class="quick-btn" data-action="left">⬅️ 좌측</button>
+            <button class="quick-btn stop-btn" data-action="stop">🛑 정지</button>
+            <button class="quick-btn" data-action="right">➡️ 우측</button>
+            <button class="quick-btn" data-action="backward">⬇️ 후진</button>
+          </div>
+          
+          <div class="rotation-controls">
+            <button class="quick-btn" data-action="rotate-left">↶ 좌회전</button>
+            <button class="quick-btn" data-action="rotate-right">↷ 우회전</button>
+          </div>
+        </div>
+
+        <!-- 미리 정의된 위치 -->
+        <div class="preset-positions">
+          <h4>미리 정의된 위치</h4>
+          <button class="preset-btn" data-position="home">🏠 홈 (0,0)</button>
+          <button class="preset-btn" data-position="a">📍 위치 A (2,2)</button>
+          <button class="preset-btn" data-position="b">📍 위치 B (-2,2)</button>
+          <button class="preset-btn" data-position="c">📍 위치 C (0,-2)</button>
+        </div>
+      </div>
+
+      <!-- 센서 데이터 -->
+      <div class="sensor-section">
+        <h3>센서 데이터</h3>
+        <div class="sensor-display">
+          <div class="sensor-item">
+            <label>선속도:</label>
+            <span id="linear-velocity">0.00 m/s</span>
+          </div>
+          <div class="sensor-item">
+            <label>각속도:</label>
+            <span id="angular-velocity">0.00 rad/s</span>
+          </div>
+          <div class="sensor-item">
+            <label>배터리:</label>
+            <span id="battery-level">--%</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- JavaScript 모듈 -->
+  <script src="js/ros_client.js"></script>
+  <script src="js/visualization.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
