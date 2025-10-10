@@ -45,21 +45,27 @@ source /opt/ros/humble/setup.bash
 ./setup.sh
 ```
 
-### 3. 시뮬레이션 환경 시작 (별도 터미널)
+### 3. 실제 로봇 연결 및 자율주행 시작
 ```bash
-# Gazebo 시뮬레이션 실행
-export TURTLEBOT3_MODEL=burger
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+# 로봇 브링업 (로봇 192.168.10.3에서 실행)
+ros2 launch turtlebot3_bringup robot.launch.py
 
-# 내비게이션 시스템 실행 (별도 터미널)
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=/path/to/map.yaml
+# 자율주행 시스템 실행 (PC에서 실행)
+ros2 launch turtlebot3_navigation2 navigation2.launch.py \
+  use_sim_time:=False \
+  map:=/home/mokwon12/ros2_ws/src/my_robot_config/maps/D3floor.yaml \
+  autostart:=True
+
+# RViz2 시각화
+ros2 run rviz2 rviz2 -d $(ros2 pkg prefix nav2_bringup)/share/nav2_bringup/rviz/nav2_default_view.rviz
 ```
 
 ### 4. 관제 시스템 실행
 
-#### 웹 기반 시스템 (권장)
+#### 웹 기반 관제 시스템 (권장)
 ```bash
-./scripts/start_web_server.sh
+# 실제 로봇용 관제 시스템 시작
+./scripts/start_real_robot_system.sh
 ```
 브라우저에서 `http://localhost:8080` 접속
 
@@ -67,6 +73,12 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:
 ```bash
 ./scripts/start_desktop_app.sh
 ```
+
+### 🤖 실제 로봇 환경 정보
+- **로봇 IP**: 192.168.10.3 (고정 IP, 유선 LAN)
+- **지도**: D3floor (3층 평면도)
+- **통신**: LAN to LAN 직접 연결
+- **자세한 가이드**: [실제 로봇 빠른 시작](docs/REAL_ROBOT_QUICKSTART.md)
 
 ## 📋 시스템 요구사항
 

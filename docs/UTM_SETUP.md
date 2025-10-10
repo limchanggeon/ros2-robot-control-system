@@ -112,49 +112,81 @@ pip3 install -r requirements.txt
 sudo apt install python3-pyqt5 python3-pyqt5.qtsvg -y
 ```
 
-## 🚀 시뮬레이션 환경 설정
+## 🤖 실제 TurtleBot3 로봇 연결
 
-### 1. Gazebo 시뮬레이션 설치
+### 1. 네트워크 설정 (유선 LAN 통신)
 ```bash
-# Gazebo 설치
-sudo apt install gazebo -y
+# 로봇 고정 IP: 192.168.10.3
+# PC와 로봇이 같은 네트워크 대역 (192.168.10.x) 사용
 
-# TurtleBot3 시뮬레이션 패키지 설치
-sudo apt install ros-humble-turtlebot3-simulations -y
+# ROS 2 환경 변수 설정
+export ROS_DOMAIN_ID=0
+export ROS_LOCALHOST_ONLY=0
+export ROBOT_IP=192.168.10.3
+
+# 환경 변수를 .bashrc에 영구 저장
+echo "export ROS_DOMAIN_ID=0" >> ~/.bashrc
+echo "export ROS_LOCALHOST_ONLY=0" >> ~/.bashrc
+echo "export ROBOT_IP=192.168.10.3" >> ~/.bashrc
+
+# PC IP 설정 확인 (192.168.10.x 대역이어야 함)
+ip addr show | grep "192.168.10"
 ```
 
-### 2. 시뮬레이션 실행
+### 2. 로봇 연결 테스트
 ```bash
-# 터미널 1: Gazebo 월드 실행
-export TURTLEBOT3_MODEL=burger
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+# 로봇 네트워크 연결 확인
+ping 192.168.10.3
 
-# 터미널 2: SLAM 실행 (지도 생성)
-ros2 launch turtlebot3_cartographer cartographer.launch.py use_sim_time:=True
+# 로봇에서 bringup 실행 (로봇에서 실행)
+# ssh ubuntu@192.168.10.3
+# ros2 launch turtlebot3_bringup robot.launch.py
 
-# 터미널 3: RViz 실행 (시각화)
-ros2 launch turtlebot3_cartographer cartographer_rviz.launch.py use_sim_time:=True
+# PC에서 로봇 토픽 확인
+ros2 topic list
 
-# 터미널 4: 텔레옵 (키보드 조작)
+# 로봇 상태 확인
+ros2 topic echo /battery_state
+ros2 topic echo /odom
+ros2 topic echo /scan
+
+# 노드 상태 확인
+ros2 node list
+```
+
+### 3. SLAM 및 지도 생성 (필요시)
+```bash
+# 터미널 1: SLAM 실행 (실제 로봇용)
+ros2 launch turtlebot3_cartographer cartographer.launch.py use_sim_time:=False
+
+# 터미널 2: RViz 실행 (시각화)
+ros2 launch turtlebot3_cartographer cartographer_rviz.launch.py use_sim_time:=False
+
+# 터미널 3: 텔레옵 (키보드 조작으로 로봇 움직여서 지도 생성)
 ros2 run turtlebot3_teleop teleop_keyboard
 ```
 
-### 3. 지도 저장 (SLAM 완료 후)
+### 4. 지도 저장 (SLAM 완료 후)
 ```bash
-# 지도 저장
-ros2 run nav2_map_server map_saver_cli -f ~/turtlebot3_map
+# 지도 저장 (D3floor 지도가 이미 있으면 생략)
+ros2 run nav2_map_server map_saver_cli -f /home/mokwon12/ros2_ws/src/my_robot_config/maps/D3floor
 ```
 
 ## 🌐 관제 시스템 실행
 
-### 1. 내비게이션 시스템 시작
+### 1. 자율주행 시스템 시작 (실제 로봇)
 ```bash
-# 터미널 1: 시뮬레이션 (이미 실행 중이면 생략)
-export TURTLEBOT3_MODEL=burger
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+# 터미널 1: 로봇 브링업 (로봇 192.168.10.3에서 실행)
+ros2 launch turtlebot3_bringup robot.launch.py
 
-# 터미널 2: 내비게이션 (저장된 지도 사용)
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=$HOME/turtlebot3_map.yaml
+# 터미널 2: 내비게이션 시스템 (PC에서 실행)
+ros2 launch turtlebot3_navigation2 navigation2.launch.py \
+  use_sim_time:=False \
+  map:=/home/mokwon12/ros2_ws/src/my_robot_config/maps/D3floor.yaml \
+  autostart:=True
+
+# 터미널 3: RViz2 시각화 (PC에서 실행)
+ros2 run rviz2 rviz2 -d $(ros2 pkg prefix nav2_bringup)/share/nav2_bringup/rviz/nav2_default_view.rviz
 ```
 
 ### 2. 웹 기반 관제 시스템 (권장)
@@ -175,16 +207,47 @@ cd ~/ros2-robot-control-system
 
 ## 🔧 네트워크 설정
 
-### UTM VM의 네트워크 설정
+### UTM VM의 네트워크 설정 (실제 로봇 연결용)
 1. UTM에서 VM 설정 → Network
-2. Network Mode: "Shared Network" 선택
-3. Port Forwarding 설정:
+2. Network Mode: "Bridged (Advanced)" 선택 - 로봇과 같은 네트워크 사용
+3. 또는 "Shared Network" + Port Forwarding:
    - Host Port: 8080 → Guest Port: 8080 (웹 서버)
    - Host Port: 9090 → Guest Port: 9090 (ROSBridge)
 
+### 로봇과 PC 네트워크 연결 확인
+```bash
+# 로봇 IP 주소 확인 (로봇에서 실행)
+hostname -I
+
+# PC에서 로봇 연결 테스트
+ping <로봇_IP_주소>
+
+# 방화벽 확인 및 해제 (필요시)
+sudo ufw status
+sudo ufw allow 11311  # ROS Master
+sudo ufw allow 9090   # ROSBridge
+```
+
 ## 🐛 문제 해결
 
-### 1. ROSBridge 연결 실패
+### 1. 로봇 연결 실패
+```bash
+# 로봇 토픽 확인
+ros2 topic list
+
+# 로봇이 보이지 않는 경우
+export ROS_DOMAIN_ID=0
+export ROS_LOCALHOST_ONLY=0
+
+# 네트워크 연결 확인
+ping <로봇_IP_주소>
+
+# ROS 2 데몬 재시작
+ros2 daemon stop
+ros2 daemon start
+```
+
+### 2. ROSBridge 연결 실패
 ```bash
 # ROSBridge 상태 확인
 ros2 node list | grep rosbridge
@@ -196,23 +259,45 @@ ros2 launch rosbridge_server rosbridge_websocket_launch.xml
 sudo netstat -tlnp | grep 9090
 ```
 
-### 2. tf2_web_republisher 문제
+### 3. tf2_web_republisher 문제
 ```bash
 # tf2_web_republisher 상태 확인
 ros2 node list | grep tf2_web_republisher
 
 # 수동 실행
 ros2 run tf2_web_republisher tf2_web_republisher
+
+# TF 트리 확인
+ros2 run tf2_tools view_frames
 ```
 
-### 3. 시뮬레이션 성능 개선
+### 4. 로봇 제어 응답 없음
 ```bash
-# Gazebo 클라이언트 없이 서버만 실행 (헤드리스 모드)
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py headless:=True
+# 로봇 상태 확인
+ros2 topic echo /cmd_vel
+
+# 내비게이션 상태 확인
+ros2 topic echo /amcl_pose
+ros2 topic echo /local_costmap/costmap
+
+# 로봇 브링업 상태 확인 (로봇에서)
+ros2 node list
+ros2 topic list
+```
+
+### 3. 실제 로봇 통신 성능 개선
+```bash
+# 네트워크 대역폭 최적화
+# LaserScan 토픽 QoS 설정
+ros2 param set /scan qos_profile best_effort
 
 # RViz에서 불필요한 디스플레이 비활성화
 # - PointCloud2 디스플레이 끄기
-# - Camera 디스플레이 끄기
+# - Camera 디스플레이 끄기 (카메라가 없는 경우)
+
+# 로봇과의 통신 지연 확인
+ros2 topic hz /scan
+ros2 topic hz /odom
 ```
 
 ### 4. 메모리 부족 문제

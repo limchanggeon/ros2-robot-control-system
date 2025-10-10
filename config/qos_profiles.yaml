@@ -35,21 +35,21 @@ tf_qos:
     sec: 0
     nsec: 0
 
-# 센서 데이터 토픽 (/scan, /image_raw)
+# 센서 데이터 토픽 (/scan, /image_raw) - 실제 로봇용
 sensor_qos:
   history: keep_last
-  depth: 10
-  reliability: best_effort
+  depth: 5  # 실제 로봇에서는 버퍼 크기 줄임
+  reliability: best_effort  # 센서 데이터는 실시간성 우선
   durability: volatile
   deadline:
     sec: 0
-    nsec: 0
+    nsec: 100000000  # 100ms 데드라인
   lifespan:
-    sec: 0
+    sec: 1  # 1초 후 데이터 무효화
     nsec: 0
   liveliness: system_default
   liveliness_lease_duration:
-    sec: 0
+    sec: 2  # 2초 생존 확인
     nsec: 0
 
 # 제어 명령 토픽 (/goal_pose, /cmd_vel)

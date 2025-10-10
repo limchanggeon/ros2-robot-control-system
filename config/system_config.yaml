@@ -1,10 +1,10 @@
 # 시스템 설정 파일
-# ROS 2 로봇 관제 시스템 전반적인 설정
+# ROS 2 로봇 관제 시스템 전반적인 설정 (실제 로봇용)
 
 # 네트워크 설정
 network:
   rosbridge:
-    host: "localhost"
+    host: "0.0.0.0"  # 외부 접근 허용
     port: 9090
     retry_attempts: 5
     retry_interval: 3000  # milliseconds
@@ -17,6 +17,14 @@ network:
     rate: 10.0  # Hz
     angular_threshold: 0.01  # radians
     translation_threshold: 0.01  # meters
+  
+  # 실제 로봇 연결 설정 (고정 IP)
+  robot_connection:
+    robot_ip: "192.168.10.3"
+    domain_id: 0
+    localhost_only: false
+    discovery_timeout: 30  # seconds
+    ping_timeout: 5  # seconds
 
 # 로봇 설정
 robot:
@@ -70,31 +78,37 @@ logging:
   file_output: false
   log_file_path: "/tmp/robot_control_system.log"
   
-# 미리 정의된 위치
+# 미리 정의된 위치 (D3floor 지도 기준)
 preset_positions:
   home:
     x: 0.0
     y: 0.0
     theta: 0.0
-    description: "홈 위치"
+    description: "홈 위치 (시작점)"
     
-  position_a:
-    x: 2.0
-    y: 2.0
+  lab_entrance:
+    x: 5.0
+    y: 0.0
     theta: 0.0
-    description: "위치 A"
+    description: "연구실 입구"
     
-  position_b:
-    x: -2.0
-    y: 2.0
+  meeting_room:
+    x: 3.0
+    y: 4.0
     theta: 1.5708  # 90 degrees
-    description: "위치 B"
+    description: "회의실"
     
-  position_c:
-    x: 0.0
-    y: -2.0
+  elevator:
+    x: -2.0
+    y: 6.0
     theta: 3.1416  # 180 degrees
-    description: "위치 C"
+    description: "엘리베이터"
+    
+  storage:
+    x: -4.0
+    y: -3.0
+    theta: -1.5708  # -90 degrees
+    description: "창고"
 
 # 빠른 명령 설정
 quick_commands:
